@@ -5,4 +5,5 @@ import com.example.cinema.model.Screening;
 import java.util.List;
 
 public interface ScreeningRepository extends JpaRepository<Screening, Long> {
+    List<Screening> findByMovieIdOrderByStartTimeAsc(Long movieId);
 }

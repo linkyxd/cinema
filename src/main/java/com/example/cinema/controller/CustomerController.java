@@ -2,6 +2,7 @@ package com.example.cinema.controller;
 
 import com.example.cinema.model.Customer;
 import com.example.cinema.repository.CustomerRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,10 +25,10 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Customer create(@RequestBody Customer customer){ return repo.save(customer); }
+    public Customer create(@Valid @RequestBody Customer customer){ return repo.save(customer); }
 
     @PutMapping("/{id}")
-    public Customer update(@PathVariable Long id, @RequestBody Customer customer){
+    public Customer update(@PathVariable Long id, @Valid @RequestBody Customer customer){
         Customer ex = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ex.setFullName(customer.getFullName());
         ex.setEmail(customer.getEmail());

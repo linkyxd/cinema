@@ -1,21 +1,28 @@
 package com.example.cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 
 @Entity
+@Table(name = "tickets")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "screening_id", nullable = false)
     private Screening screening;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @Min(0)
+    @Column(nullable = false)
     private double price;
 
+    @Column(nullable = false)
     private boolean refunded = false;
 
     public Ticket() {}

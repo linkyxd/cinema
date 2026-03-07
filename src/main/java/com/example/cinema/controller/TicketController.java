@@ -45,7 +45,7 @@ public class TicketController {
 
         Screening screening = screeningRepo.findById(ticket.getScreening().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid screening"));
         // check capacity
-        long sold = repo.countByScreening(screening);
+        long sold = repo.countByScreeningAndRefundedFalse(screening);
         if (screening.getHall() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Screening has no hall assigned");
         }

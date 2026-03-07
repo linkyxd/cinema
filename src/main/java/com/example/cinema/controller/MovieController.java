@@ -2,6 +2,7 @@ package com.example.cinema.controller;
 
 import com.example.cinema.model.Movie;
 import com.example.cinema.repository.MovieRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,10 +25,10 @@ public class MovieController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Movie create(@RequestBody Movie movie){ return repo.save(movie); }
+    public Movie create(@Valid @RequestBody Movie movie){ return repo.save(movie); }
 
     @PutMapping("/{id}")
-    public Movie update(@PathVariable Long id, @RequestBody Movie movie){
+    public Movie update(@PathVariable Long id, @Valid @RequestBody Movie movie){
         Movie ex = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ex.setTitle(movie.getTitle());
         ex.setGenre(movie.getGenre());

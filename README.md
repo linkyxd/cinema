@@ -1,17 +1,55 @@
-# Cinema Spring Boot project
+# Кинотеатр — веб-приложение
 
-How to run:
-1. Open in IntelliJ IDEA (or use terminal)
-2. Run `mvn spring-boot:run` or run `CinemaApplication` from IDE
-3. H2 console available at http://localhost:8080/h2-console (JDBC URL: jdbc:h2:mem:cinema)
+## Тема
+Веб-приложение для кинотеатра: управление сеансами, залами, фильмами, клиентами и билетами.
 
-REST endpoints (base `/api`):
-- /api/movies
-- /api/halls
-- /api/customers
-- /api/screenings
-- /api/tickets
+## Основные сущности
+| Сущность | Описание |
+|----------|----------|
+| **Customer** | Клиент (ФИО, email) |
+| **Movie** | Фильм (название, жанр, длительность) |
+| **Hall** | Зал (название, вместимость) |
+| **Screening** | Сеанс (фильм, зал, время начала) |
+| **Ticket** | Билет (сеанс, клиент, цена, статус возврата) |
 
-Notes:
-- Creating a ticket checks hall capacity (tickets sold <= hall.capacity).
-- Refund allowed only before screening start time: POST /api/tickets/refund/{id}
+## Связи
+- Сеанс → Фильм (многие к одному)
+- Сеанс → Зал (многие к одному)
+- Билет → Сеанс, Билет → Клиент (многие к одному)
+
+## Операции сервиса
+
+### CRUD
+- **Customers**: создать, получить, обновить, удалить, список
+- **Movies**: создать, получить, обновить, удалить, список
+- **Halls**: создать, получить, обновить, удалить, список
+- **Screenings**: создать, получить, обновить, удалить, список
+- **Tickets**: создать, получить, обновить, удалить, список
+
+### Бизнес-операции
+1. **Покупка билета** — `POST /api/booking/buy` — проверка свободных мест, создание билета
+2. **Возврат билета** — `POST /api/booking/refund/{id}` — возврат до начала сеанса
+3. **Сеансы по фильму** — `GET /api/booking/screenings?movieId=` — список сеансов
+4. **Свободные места** — `GET /api/booking/available-seats?screeningId=` — количество мест
+5. **Покупка нескольких билетов** — `POST /api/booking/bulk` — в одной транзакции
+
+## Запуск
+
+### PostgreSQL
+1. Создайте БД: `createdb cinema`
+2. Скопируйте `.env.example` в `.env` и укажите параметры:
+   ```
+   DB_URL=jdbc:postgresql://localhost:5432/cinema
+   DB_USERNAME=postgres
+   DB_PASSWORD=ваш_пароль
+   ```
+3. Запуск: `mvn spring-boot:run`
+
+### H2 (без PostgreSQL)
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+## API-запросы
+- `api/cinema-api.http` — для IntelliJ IDEA / VS Code REST Client
+- `api/cinema-postman.json` — для Postman (Import → файл)

@@ -1,15 +1,25 @@
 package com.example.cinema.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "movies")
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String genre;
+
+    @Min(1)
+    @Column(nullable = false)
     private int durationMinutes;
 
     public Movie() {}

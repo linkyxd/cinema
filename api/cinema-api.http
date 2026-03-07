@@ -1,0 +1,179 @@
+### Cinema API — коллекция запросов
+### Базовый URL: http://localhost:8080
+### Переменные (Postman/IDE): baseUrl = http://localhost:8080
+
+@baseUrl = http://localhost:8080
+
+### ========== CRUD: Customers ==========
+### Список клиентов
+GET {{baseUrl}}/api/customers
+
+### Создать клиента
+POST {{baseUrl}}/api/customers
+Content-Type: application/json
+
+{
+  "fullName": "Новый Клиент",
+  "email": "new@example.com"
+}
+
+### Получить клиента по id
+GET {{baseUrl}}/api/customers/1
+
+### Обновить клиента
+PUT {{baseUrl}}/api/customers/1
+Content-Type: application/json
+
+{
+  "fullName": "Иван Петров (обновлён)",
+  "email": "ivan@mail.ru"
+}
+
+### Удалить клиента
+# DELETE {{baseUrl}}/api/customers/4
+
+### ========== CRUD: Movies ==========
+GET {{baseUrl}}/api/movies
+
+POST {{baseUrl}}/api/movies
+Content-Type: application/json
+
+{
+  "title": "Интерстеллар",
+  "genre": "Фантастика",
+  "durationMinutes": 169
+}
+
+GET {{baseUrl}}/api/movies/1
+
+PUT {{baseUrl}}/api/movies/1
+Content-Type: application/json
+
+{
+  "title": "Матрица",
+  "genre": "Фантастика",
+  "durationMinutes": 136
+}
+
+# DELETE {{baseUrl}}/api/movies/4
+
+### ========== CRUD: Halls ==========
+GET {{baseUrl}}/api/halls
+
+POST {{baseUrl}}/api/halls
+Content-Type: application/json
+
+{
+  "name": "Зал 4",
+  "capacity": 80
+}
+
+GET {{baseUrl}}/api/halls/1
+
+PUT {{baseUrl}}/api/halls/1
+Content-Type: application/json
+
+{
+  "name": "Зал 1",
+  "capacity": 120
+}
+
+# DELETE {{baseUrl}}/api/halls/4
+
+### ========== CRUD: Screenings ==========
+GET {{baseUrl}}/api/screenings
+
+POST {{baseUrl}}/api/screenings
+Content-Type: application/json
+
+{
+  "movie": { "id": 1 },
+  "hall": { "id": 1 },
+  "startTime": "2025-03-20T19:00:00"
+}
+
+GET {{baseUrl}}/api/screenings/1
+
+PUT {{baseUrl}}/api/screenings/1
+Content-Type: application/json
+
+{
+  "movie": { "id": 1 },
+  "hall": { "id": 1 },
+  "startTime": "2025-03-15T18:30:00"
+}
+
+# DELETE {{baseUrl}}/api/screenings/4
+
+### ========== CRUD: Tickets ==========
+GET {{baseUrl}}/api/tickets
+
+POST {{baseUrl}}/api/tickets
+Content-Type: application/json
+
+{
+  "screening": { "id": 1 },
+  "customer": { "id": 1 },
+  "price": 400.0
+}
+
+GET {{baseUrl}}/api/tickets/1
+
+PUT {{baseUrl}}/api/tickets/1
+Content-Type: application/json
+
+{
+  "price": 450.0
+}
+
+# DELETE {{baseUrl}}/api/tickets/4
+
+### ========== БИЗНЕС-ОПЕРАЦИИ ==========
+
+### 1. Покупка билета (buy)
+POST {{baseUrl}}/api/booking/buy
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "screeningId": 1,
+  "price": 350.0
+}
+
+### 2. Возврат билета (refund)
+POST {{baseUrl}}/api/booking/refund/3
+
+### 3. Сеансы по фильму
+GET {{baseUrl}}/api/booking/screenings?movieId=1
+
+### 4. Свободные места на сеанс
+GET {{baseUrl}}/api/booking/available-seats?screeningId=1
+
+### 5. Покупка нескольких билетов (bulk)
+POST {{baseUrl}}/api/booking/bulk
+Content-Type: application/json
+
+{
+  "customerId": 2,
+  "screeningId": 1,
+  "quantity": 3,
+  "pricePerTicket": 350.0
+}
+
+### Доп: Билеты клиента
+GET {{baseUrl}}/api/booking/customer/1/tickets
+
+### ========== Сценарий: создать данные → операция → результат ==========
+### Шаг 1: Проверяем свободные места
+GET {{baseUrl}}/api/booking/available-seats?screeningId=1
+
+### Шаг 2: Покупаем билет
+# POST {{baseUrl}}/api/booking/buy
+# Content-Type: application/json
+# {"customerId": 3, "screeningId": 1, "price": 350.0}
+
+### Шаг 3: Снова смотрим свободные места (должно уменьшиться)
+GET {{baseUrl}}/api/booking/available-seats?screeningId=1
+
+### Шаг 4: Билеты клиента
+GET {{baseUrl}}/api/booking/customer/3/tickets
