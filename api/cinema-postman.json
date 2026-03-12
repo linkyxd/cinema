@@ -6,54 +6,67 @@
   },
   "variable": [
     {"key": "baseUrl", "value": "http://localhost:8080"},
-    {"key": "xsrfToken", "value": ""}
+    {"key": "accessToken", "value": ""},
+    {"key": "refreshToken", "value": ""}
   ],
   "item": [
     {
       "name": "Auth & Security",
       "item": [
         {
-          "name": "1) Get CSRF token (XSRF-TOKEN cookie)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/movies", "host": ["{{baseUrl}}"], "path": ["api", "movies"]}
-          }
-        },
-        {
-          "name": "2) Register user",
+          "name": "1) Register",
           "request": {
             "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "X-XSRF-TOKEN", "value": "{{xsrfToken}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"username\": \"user1\",\n  \"password\": \"StrongP@ss1!\",\n  \"fullName\": \"User One\"\n}"
-            },
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"username\":\"user1\",\"password\":\"StrongP@ss1!\",\"fullName\":\"User One\"}"},
             "url": {"raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"]}
           }
         },
         {
-          "name": "3) Example secured request (BUY ticket)",
+          "name": "2) Login",
           "request": {
             "method": "POST",
-            "auth": {
-              "type": "basic",
-              "basic": [
-                { "key": "username", "value": "user1", "type": "string" },
-                { "key": "password", "value": "StrongP@ss1!", "type": "string" }
-              ]
-            },
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"username\":\"user2\",\"password\":\"StrongP@ss1!\"}"},
+            "url": {"raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"]}
+          }
+        },
+        {
+          "name": "3) Refresh",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"refreshToken\":\"{{refreshToken}}\"}"},
+            "url": {"raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api", "auth", "refresh"]}
+          }
+        },
+        {
+          "name": "4) Protected with JWT",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}", "disabled": false}],
+            "url": {"raw": "{{baseUrl}}/api/customers", "host": ["{{baseUrl}}"], "path": ["api", "customers"]}
+          }
+        },
+        {
+          "name": "5) Buy ticket (JWT)",
+          "request": {
+            "method": "POST",
             "header": [
               {"key": "Content-Type", "value": "application/json"},
-              {"key": "X-XSRF-TOKEN", "value": "{{xsrfToken}}"}
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"customerId\": 1,\n  \"screeningId\": 1,\n  \"price\": 350.0\n}"
-            },
+            "body": {"mode": "raw", "raw": "{\"customerId\":1,\"screeningId\":1,\"price\":350.0}"},
+            "url": {"raw": "{{baseUrl}}/api/booking/buy", "host": ["{{baseUrl}}"], "path": ["api", "booking", "buy"]}
+          }
+        },
+        {
+          "name": "6) Buy ticket (Basic Auth)",
+          "request": {
+            "method": "POST",
+            "auth": {"type": "basic", "basic": [{"key": "username", "value": "user2", "type": "string"}, {"key": "password", "value": "StrongP@ss1!", "type": "string"}]},
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"customerId\":1,\"screeningId\":1,\"price\":350.0}"},
             "url": {"raw": "{{baseUrl}}/api/booking/buy", "host": ["{{baseUrl}}"], "path": ["api", "booking", "buy"]}
           }
         }

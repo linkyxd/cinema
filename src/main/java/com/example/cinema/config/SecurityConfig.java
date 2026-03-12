@@ -2,6 +2,8 @@ package com.example.cinema.config;
 
 import com.example.cinema.model.UserAccount;
 import com.example.cinema.repository.UserAccountRepository;
+import com.example.cinema.security.JwtAuthFilter;
+import com.example.cinema.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +11,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -55,18 +59,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   DaoAuthenticationProvider authenticationProvider) throws Exception {
+                                                   DaoAuthenticationProvider authenticationProvider,
+                                                   JwtTokenProvider jwtTokenProvider) throws Exception {
         http
-                // Для REST API, тестируемого через Postman, CSRF отключаем.
                 .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtAuthFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(httpBasic -> { })
                 .authorizeHttpRequests(auth -> auth
-                        // регистрация и базовые GET для просмотра доступны без авторизации
-                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/api/movies/**", "/api/screenings/**").permitAll()
-                        // всё остальное требует аутентификацию
                         .anyRequest().authenticated()
                 );
 

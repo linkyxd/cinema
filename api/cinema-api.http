@@ -4,6 +4,35 @@
 
 @baseUrl = http://localhost:8080
 
+### ========== JWT: Login / Refresh ==========
+### Шаг 1: Login — получить access и refresh токены
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user2",
+  "password": "StrongP@ss1!"
+}
+
+### Шаг 2: Защищённый эндпоинт с access токеном (подставь accessToken из ответа login)
+GET {{baseUrl}}/api/customers
+Authorization: Bearer {{accessToken}}
+
+### Шаг 3: Refresh — новая пара токенов (подставь refreshToken из ответа login)
+# @name refresh
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Шаг 4: Повторный refresh со СТАРЫМ refresh — ожидается 401/403
+# POST {{baseUrl}}/api/auth/refresh
+# Content-Type: application/json
+# {"refreshToken": "<старый_refresh_токен>"}
+
 ### ========== CRUD: Customers ==========
 ### Список клиентов
 GET {{baseUrl}}/api/customers
