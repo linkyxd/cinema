@@ -4,6 +4,7 @@ import com.example.cinema.model.Screening;
 import com.example.cinema.repository.ScreeningRepository;
 import com.example.cinema.repository.MovieRepository;
 import com.example.cinema.repository.HallRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,6 +34,7 @@ public class ScreeningController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public Screening create(@RequestBody Screening screening){
         // Basic validation: referenced movie and hall must exist
         if (screening.getMovie() == null || screening.getMovie().getId() == null ||
@@ -47,6 +49,7 @@ public class ScreeningController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Screening update(@PathVariable Long id, @RequestBody Screening screening){
         Screening ex = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ex.setStartTime(screening.getStartTime());
@@ -62,5 +65,6 @@ public class ScreeningController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id){ repo.deleteById(id); }
 }

@@ -3,6 +3,7 @@ package com.example.cinema.controller;
 import com.example.cinema.model.Movie;
 import com.example.cinema.repository.MovieRepository;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,9 +26,11 @@ public class MovieController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public Movie create(@Valid @RequestBody Movie movie){ return repo.save(movie); }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Movie update(@PathVariable Long id, @Valid @RequestBody Movie movie){
         Movie ex = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ex.setTitle(movie.getTitle());
@@ -38,5 +41,6 @@ public class MovieController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id){ repo.deleteById(id); }
 }

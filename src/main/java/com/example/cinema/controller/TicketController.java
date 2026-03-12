@@ -5,6 +5,7 @@ import com.example.cinema.model.Screening;
 import com.example.cinema.repository.TicketRepository;
 import com.example.cinema.repository.ScreeningRepository;
 import com.example.cinema.repository.CustomerRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,15 +27,18 @@ public class TicketController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Ticket> all() { return repo.findAll(); }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public Ticket get(@PathVariable Long id){
         return repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('USER')")
     public Ticket create(@RequestBody Ticket ticket){
         if (ticket.getScreening() == null || ticket.getScreening().getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Screening required");
@@ -60,6 +64,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Ticket update(@PathVariable Long id, @RequestBody Ticket t){
         Ticket ex = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // allow updating price only
@@ -68,6 +73,7 @@ public class TicketController {
     }
 
     @PostMapping("/refund/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public Ticket refund(@PathVariable Long id){
         Ticket ex = repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Screening screening = ex.getScreening();
@@ -83,5 +89,6 @@ public class TicketController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id){ repo.deleteById(id); }
 }

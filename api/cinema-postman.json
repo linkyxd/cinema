@@ -5,9 +5,60 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {"key": "baseUrl", "value": "http://localhost:8080"}
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "xsrfToken", "value": ""}
   ],
   "item": [
+    {
+      "name": "Auth & Security",
+      "item": [
+        {
+          "name": "1) Get CSRF token (XSRF-TOKEN cookie)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/api/movies", "host": ["{{baseUrl}}"], "path": ["api", "movies"]}
+          }
+        },
+        {
+          "name": "2) Register user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-XSRF-TOKEN", "value": "{{xsrfToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user1\",\n  \"password\": \"StrongP@ss1!\",\n  \"fullName\": \"User One\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"]}
+          }
+        },
+        {
+          "name": "3) Example secured request (BUY ticket)",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "user1", "type": "string" },
+                { "key": "password", "value": "StrongP@ss1!", "type": "string" }
+              ]
+            },
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-XSRF-TOKEN", "value": "{{xsrfToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"screeningId\": 1,\n  \"price\": 350.0\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/booking/buy", "host": ["{{baseUrl}}"], "path": ["api", "booking", "buy"]}
+          }
+        }
+      ]
+    },
     {
       "name": "CRUD Customers",
       "item": [
