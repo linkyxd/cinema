@@ -53,3 +53,10 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ## API-запросы
 - `api/cinema-api.http` — для IntelliJ IDEA / VS Code REST Client
 - `api/cinema-postman.json` — для Postman (Import → файл)
+
+## TLS
+См. `docs/TLS-SETUP.md`: генерация цепочки сертификатов, запуск с TLS, добавление в доверенные.
+
+## CI
+- **GitHub**: `.github/workflows/ci.yml` — сборка, тесты, артефакт
+- **GitLab**: `.gitlab-ci.yml` — то же

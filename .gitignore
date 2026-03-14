@@ -34,3 +34,11 @@ build/
 
 ### Environment ###
 .env
+
+### Certificates and keystores (never commit) ###
+certs/
+*.jks
+*.p12
+*.pem
+*.key
+*.crt

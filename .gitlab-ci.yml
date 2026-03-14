@@ -1,0 +1,22 @@
+# GitLab CI — компиляция, тесты, сборка, артефакт
+# Keystore и пароль — только через GitLab Variables (не в коде!)
+
+image: maven:3.9-eclipse-temurin-17
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "-B -q"
+
+stages:
+  - build
+
+ci:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS compile
+    - mvn $MAVEN_CLI_OPTS test -Dspring.profiles.active=test
+    - mvn $MAVEN_CLI_OPTS package -DskipTests
+  artifacts:
+    name: "cinema-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - target/*.jar
